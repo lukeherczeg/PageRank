@@ -6,85 +6,91 @@ using namespace std;
 
 #include "pagerank.h"
 
-/*
-  map <int, vector<pair<int, int>>>;
-  set <int> vertices;
-  map <int, vector<int>>;
-*/
-
-
-
-void insertEdge(int from, int to, int weight){
-	;
+void Graph::insertEdge(int from, int to, int weight){
+	g[from].push_back(pair<int,int>(weight,to));
+	simpleG[from].push_back(to);
+	vertices.insert(to);
+	vertices.insert(from);
 }  //inserts new edge in graph
 
 
-bool isEdge(int from, int to){
-	return true;
+bool Graph::isEdge(int from, int to){
+	for(int i : vertices){
+		if(from == i){
+			vector<int> j = getAdjacent(i);
+			for(int k : j)
+				if(k == to)
+					return true;
+		}
+	}
+	return false;
 }  //returns true if there is an edge between the vertices from and to
 
 
-int getWeight(int from, int to){
-	return 0;
+int Graph::getWeight(int from, int to){
+	if(isEdge(from,to)){
+		vector<pair<int,int>> i  = g[from];
+		for(pair<int,int> j : i)
+			if(j.second == to)
+				return j.first;
+	}
+	return -1;
 }  //returns the weight of the edge between the vertices from and to
 
 
-vector<int> getAdjacent(int vertex){
-	return NULL;
+vector<int> Graph::getAdjacent(int vertex){
+	vector<int> adjacent;
+	for(int i : simpleG[vertex])
+		adjacent.push_back(i);
+	return adjacent;
 }  //return an array of integers representing vertices adjacent to vertex
 
 
-void printGraph(){
-	;
+void Graph::printGraph(){
+	for(int i : vertices){
+		vector<int> j = getAdjacent(i);
+		if(!j.empty()){
+			cout << i << " ";
+			for(unsigned int k = 0; k < j.size(); k++){
+				cout << j[k];
+				if(k+1 < j.size())
+					cout << " ";
+			}
+		}
+		else
+			cout << i;
+		cout << endl;
+	}
 } //prints graph in a format sorted by ascending vertex and edge list
 
 
 int main()
 {
     //DO NOT CHANGE THIS FUNCTION. CHANGE YOUR IMPLEMENTATION CODE TO MAKE IT WORK
-    int noOfLines, operation, vertex, to, fro, weight,source,j;
-    vector<int> arr;
-    int arrSize;
+    int to, fro, weight;
     Graph g;
-    cin>>noOfLines;
-    for(int i=0;i<noOfLines;i++)
-    {
-        cin>>operation;
-        switch(operation)
-        {
-            case 2:
-                cin>>fro;
-                cin>>to;
-                cin>>weight;
-                g.insertEdge(fro,to,weight);
-                break;
-            case 3:
-                cin>>fro;
-                cin>>to;
-                cout<<g.isEdge(fro,to)<<"\n";
-                break;
-            case 4:
-                cin>>fro;
-                cin>>to;
-                cout<<g.getWeight(fro,to)<<"\n";
-                break;
-            case 5:
-                cin>>vertex;
-                arr=g.getAdjacent(vertex);
-                arrSize = arr.size();
-                j=0;
-                while(j<arrSize)
-                {
-                    cout<<arr[j]<<" ";
-                    j++;
-                }
-                cout<<"\n";
-                break;
-            case 7:
-                g.printGraph();
-                cout<<"\n";
-                break;
-        }
-    }
+
+    fro = 2;
+    to = 3;
+    weight = 40;
+    g.insertEdge(fro,to,weight);
+    cout<<g.getWeight(fro,to)<<"\n";
+
+    fro = 1;
+	to = 4;
+	weight = 150;
+	g.insertEdge(fro,to,weight);
+	cout<<g.isEdge(fro,to)<<"\n";
+	cout<<g.isEdge(to,fro)<<"\n";
+	cout<<g.getWeight(fro,to)<<"\n";
+
+	fro = 1;
+	to = 5;
+	weight = 340;
+	g.insertEdge(fro,to,weight);
+	cout<<g.getWeight(fro,to)<<"\n";
+
+	g.printGraph();
+
     return 0;
 }

@@ -11,9 +11,9 @@
 class Graph
 {
 	private:
-		map <int, vector<pair<int, int>>>;
+		map <int, vector<pair<int, int>>> g;
 		set <int> vertices;
-		map <int, vector<int>>;
+		map <int, vector<int>> simpleG;
     public:
 		void insertEdge(int from, int to, int weight);  //inserts new edge in graph
 		bool isEdge(int from, int to);  //returns true if there is an edge between the vertices from and to
