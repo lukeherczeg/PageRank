@@ -1,10 +1,3 @@
-/*
- * pagerank.h
- *
- *  Created on: Nov 19, 2018
- *      Author: Luke H
- */
-
 #ifndef PAGERANK_H_
 #define PAGERANK_H_
 
