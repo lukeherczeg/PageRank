@@ -63,6 +63,20 @@ void Graph::printGraph(){
 	}
 } //prints graph in a format sorted by ascending vertex and edge list
 
+int Graph::getOutDegree(string vertex){
+	return getAdjacent(vertex).size();
+}
+
+void Graph::fillAdjacency(){
+	int c = 0;
+	for(string i : vertices){
+		vector<string> j = getAdjacent(i);
+		for(int k = 0; k < j.size(); k++){
+			weightMatrix[k][c] = 1/getOutDegree(i);
+		}
+
+	}
+}
 
 int main()
 {
