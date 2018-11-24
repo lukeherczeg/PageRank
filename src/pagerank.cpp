@@ -6,19 +6,18 @@ using namespace std;
 
 #include "pagerank.h"
 
-void Graph::insertEdge(int from, int to, int weight){
-	g[from].push_back(pair<int,int>(weight,to));
-	simpleG[from].push_back(to);
-	vertices.insert(to);
+void Graph::insertEdge(string from, string to, int weight){
+	g[from].push_back(pair<int,string>(weight,to));
+	vertices.insert(to);		// Inserting both to and from will assure all vertices are collected without overlap.
 	vertices.insert(from);
 }  //inserts new edge in graph
 
 
-bool Graph::isEdge(int from, int to){
-	for(int i : vertices){
+bool Graph::isEdge(string from, string to){
+	for(string i : vertices){
 		if(from == i){
-			vector<int> j = getAdjacent(i);
-			for(int k : j)
+			vector<string> j = getAdjacent(i);
+			for(string k : j)
 				if(k == to)
 					return true;
 		}
@@ -27,10 +26,10 @@ bool Graph::isEdge(int from, int to){
 }  //returns true if there is an edge between the vertices from and to
 
 
-int Graph::getWeight(int from, int to){
+int Graph::getWeight(string from, string to){
 	if(isEdge(from,to)){
-		vector<pair<int,int>> i  = g[from];
-		for(pair<int,int> j : i)
+		vector<pair<int,string>> i  = g[from];
+		for(pair<int,string> j : i)
 			if(j.second == to)
 				return j.first;
 	}
@@ -38,17 +37,18 @@ int Graph::getWeight(int from, int to){
 }  //returns the weight of the edge between the vertices from and to
 
 
-vector<int> Graph::getAdjacent(int vertex){
-	vector<int> adjacent;
-	for(int i : simpleG[vertex])
-		adjacent.push_back(i);
+vector<string> Graph::getAdjacent(string vertex){
+	vector<string> adjacent;
+	vector<pair<int,string>> i  = g[vertex];
+	for(pair<int,string> j : i)
+		adjacent.push_back(j.second);
 	return adjacent;
 }  //return an array of integers representing vertices adjacent to vertex
 
 
 void Graph::printGraph(){
-	for(int i : vertices){
-		vector<int> j = getAdjacent(i);
+	for(string i : vertices){
+		vector<string> j = getAdjacent(i);
 		if(!j.empty()){
 			cout << i << " ";
 			for(unsigned int k = 0; k < j.size(); k++){
@@ -67,28 +67,29 @@ void Graph::printGraph(){
 int main()
 {
     //DO NOT CHANGE THIS FUNCTION. CHANGE YOUR IMPLEMENTATION CODE TO MAKE IT WORK
-    int to, fro, weight;
+    string to, fro;
+	int weight;
     Graph g;
 
-    fro = 2;
-    to = 3;
+    fro = "google.com";
+    to = "facebook.com";
     weight = 40;
     g.insertEdge(fro,to,weight);
-    cout<<g.getWeight(fro,to)<<"\n";
 
-    fro = 1;
-	to = 4;
+    fro = "instagram.com";
+	to = "facebook.com";
 	weight = 150;
 	g.insertEdge(fro,to,weight);
-	cout<<g.isEdge(fro,to)<<"\n";
-	cout<<g.isEdge(to,fro)<<"\n";
-	cout<<g.getWeight(fro,to)<<"\n";
 
-	fro = 1;
-	to = 5;
+	fro = "facebook.com";
+	to = "instagram.com";
 	weight = 340;
 	g.insertEdge(fro,to,weight);
-	cout<<g.getWeight(fro,to)<<"\n";
+
+	fro = "facebook.com";
+	to = "elfster.com";
+	weight = 340;
+	g.insertEdge(fro,to,weight);
 
 	g.printGraph();
 
