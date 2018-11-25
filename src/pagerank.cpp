@@ -1,49 +1,36 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #include <set>
 #include <map>
 using namespace std;
 
 #include "pagerank.h"
 
-void Graph::insertEdge(string from, string to, int weight){
-	g[from].push_back(pair<int,string>(weight,to));
+template <typename T>
+void sort(vector<T> array){
+	sort((array).begin(), (array).end());
+}
+
+void Graph::insertEdge(string from, string to){
+	g[from].push_back(to);
 	vertices.insert(to);		// Inserting both to and from will assure all vertices are collected without overlap.
 	vertices.insert(from);
 }  //inserts new edge in graph
 
 
 bool Graph::isEdge(string from, string to){
-	for(string i : vertices){
-		if(from == i){
-			vector<string> j = getAdjacent(i);
-			for(string k : j)
-				if(k == to)
-					return true;
-		}
-	}
+	string i = *(vertices.find(from));      // Automatically dereference returned iterator
+	vector<string> j = getAdjacent(i);
+	for(string k : j)
+		if(k == to)
+			return true;
 	return false;
 }  //returns true if there is an edge between the vertices from and to
 
-
-int Graph::getWeight(string from, string to){
-	if(isEdge(from,to)){
-		vector<pair<int,string>> i = g[from];
-		for(pair<int,string> j : i)
-			if(j.second == to)
-				return j.first;
-	}
-	return -1;
-}  //returns the weight of the edge between the vertices from and to
-
-
 vector<string> Graph::getAdjacent(string vertex){
-	vector<string> adjacent;
-	vector<pair<int,string>> i = g[vertex];
-	for(pair<int,string> j : i)
-		adjacent.push_back(j.second);
-	return adjacent;
-}  //return an array of integers representing vertices adjacent to vertex
+	return g[vertex];
+}  //return an array of strings representing vertices adjacent to vertex
 
 
 void Graph::printGraph(){
@@ -63,73 +50,96 @@ void Graph::printGraph(){
 	}
 } //prints graph in a format sorted by ascending vertex and edge list
 
-int Graph::getOutDegree(string vertex){
+float Graph::getOutDegree(string vertex){
 	return getAdjacent(vertex).size();
 }
 
+void Graph::sortVertices(){
+	vector<string> temp;
+	for(string i : vertices)
+		temp.push_back(i);
+	sort(temp);
+	sortedVertices = temp;
+}
+
 void Graph::fillRanks(){
-	rankMatrix = new int * [vertices.size()];
-	int c = 0;
-	int k = 0;
-	for(string i : vertices){
-		rankMatrix[c] = new int[vertices.size()];
-		for(string j : vertices){
-			if(isEdge(i,j))
-				rankMatrix[c][k] = 1/getOutDegree(i);
-			else
-				rankMatrix[c][k] = 0;
-			k++;
-		}
-		k = 0;
-		c++;
+	int n = vertices.size();
+	for(int i = 0; i < n; i++)
+		for(int j = 0; j < n; j++)
+			if(isEdge(sortedVertices[i],sortedVertices[j]))
+				rankMatrix[j][i] = 1/getOutDegree(sortedVertices[i]);
+}
+
+void Graph::initializeMatrix(){
+	int n = vertices.size();
+	rankMatrix = new float *[n];
+	for(int i = 0; i < n; i++){
+		rankMatrix[i] = new float[n];
+		for(int j = 0; j < n; j++)
+			rankMatrix[i][j] = 0;
 	}
 }
 
 void Graph::printMatrix(){
-	int c = 0;
-	int k = 0;
-	for(string i : vertices){
-		for(string j : vertices){
-			cout << rankMatrix[c][k] << " ";
-			k++;
-		}
+	int n = vertices.size();
+	for(int i = 0; i < n; i++){
+		for(int j = 0; j < n; j++)
+			printf("  %.2f", rankMatrix[i][j]);
 		cout << endl;
-		k = 0;
+	}
+}
+
+void Graph::printSortedVertices(){
+	int c = 0;
+	for(string i : sortedVertices){
+		cout << i << " ";
 		c++;
 	}
 }
 
-int main()
-{
-    //DO NOT CHANGE THIS FUNCTION. CHANGE YOUR IMPLEMENTATION CODE TO MAKE IT WORK
+int main(){
     string to, fro;
-	int weight;
-    Graph g;
+    Graph * g = new Graph();
 
     fro = "google.com";
-    to = "facebook.com";
-    weight = 40;
-    g.insertEdge(fro,to,weight);
+    to = "gmail.com";
+    g->insertEdge(fro,to);
 
-    fro = "instagram.com";
+    fro = "google.com";
+	to = "maps.com";
+	g->insertEdge(fro,to);
+
+	fro = "facebook.com";
+	to = "ufl.edu";
+	g->insertEdge(fro,to);
+
+	fro = "ufl.edu";
+	to = "google.com";
+	g->insertEdge(fro,to);
+
+	fro = "ufl.edu";
+	to = "gmail.com";
+	g->insertEdge(fro,to);
+
+	fro = "maps.com";
 	to = "facebook.com";
-	weight = 150;
-	g.insertEdge(fro,to,weight);
+	g->insertEdge(fro,to);
 
-	fro = "facebook.com";
-	to = "instagram.com";
-	weight = 340;
-	g.insertEdge(fro,to,weight);
+	fro = "gmail.com";
+	to = "maps.com";
+	g->insertEdge(fro,to);
 
-	fro = "facebook.com";
-	to = "elfster.com";
-	weight = 340;
-	g.insertEdge(fro,to,weight);
+	g->printGraph();
+	g->sortVertices();
+	g->initializeMatrix();
+	g->fillRanks();
+	g->printMatrix();
 
-	g.printGraph();
 
-	g.fillRanks();
-	g.printMatrix();
+
+//	for(string i : g->getAdjacent(fro))
+//		cout << i << " ";
+//	cout << endl;
 
 
     return 0;
