@@ -5,8 +5,8 @@ class Graph
 {
 	private:
 		map <string, vector<pair<int, string>>> g;
-		int weightMatrix[][];
 		set <string> vertices;
+		int ** rankMatrix;
 
     public:
 		void insertEdge(string from, string to, int weight);  //inserts new edge in graph
@@ -15,7 +15,8 @@ class Graph
 		vector<string> getAdjacent(string vertex);  //return an array of integers representing vertices adjacent to vertex
 		void printGraph(); //prints graph in a format sorted by ascending vertex and edge list
 		int getOutDegree(string vertex);
-		void fillAdjacency();
+		void fillRanks();
+		void printMatrix();
 };
 
 

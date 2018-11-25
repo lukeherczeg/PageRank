@@ -28,7 +28,7 @@ bool Graph::isEdge(string from, string to){
 
 int Graph::getWeight(string from, string to){
 	if(isEdge(from,to)){
-		vector<pair<int,string>> i  = g[from];
+		vector<pair<int,string>> i = g[from];
 		for(pair<int,string> j : i)
 			if(j.second == to)
 				return j.first;
@@ -39,7 +39,7 @@ int Graph::getWeight(string from, string to){
 
 vector<string> Graph::getAdjacent(string vertex){
 	vector<string> adjacent;
-	vector<pair<int,string>> i  = g[vertex];
+	vector<pair<int,string>> i = g[vertex];
 	for(pair<int,string> j : i)
 		adjacent.push_back(j.second);
 	return adjacent;
@@ -67,14 +67,35 @@ int Graph::getOutDegree(string vertex){
 	return getAdjacent(vertex).size();
 }
 
-void Graph::fillAdjacency(){
+void Graph::fillRanks(){
+	rankMatrix = new int * [vertices.size()];
 	int c = 0;
+	int k = 0;
 	for(string i : vertices){
-		vector<string> j = getAdjacent(i);
-		for(int k = 0; k < j.size(); k++){
-			weightMatrix[k][c] = 1/getOutDegree(i);
+		rankMatrix[c] = new int[vertices.size()];
+		for(string j : vertices){
+			if(isEdge(i,j))
+				rankMatrix[c][k] = 1/getOutDegree(i);
+			else
+				rankMatrix[c][k] = 0;
+			k++;
 		}
+		k = 0;
+		c++;
+	}
+}
 
+void Graph::printMatrix(){
+	int c = 0;
+	int k = 0;
+	for(string i : vertices){
+		for(string j : vertices){
+			cout << rankMatrix[c][k] << " ";
+			k++;
+		}
+		cout << endl;
+		k = 0;
+		c++;
 	}
 }
 
@@ -106,6 +127,10 @@ int main()
 	g.insertEdge(fro,to,weight);
 
 	g.printGraph();
+
+	g.fillRanks();
+	g.printMatrix();
+
 
     return 0;
 }
