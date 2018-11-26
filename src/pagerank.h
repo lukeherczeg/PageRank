@@ -16,13 +16,10 @@ class Graph
 		float getOutDegree(string vertex);
 		void insertEdge(string from, string to);
 		void powerIterations(int iterations);
-		void printGraph();
 		void sortVertices();
 		void initRankMatrix();
 		void initPowMatrix();
 		void initMatrices();
-		void printRankMatrix();
-		void printPowMatrix();
 		void printPageRank();
 };
 

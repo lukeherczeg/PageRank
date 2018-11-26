@@ -7,7 +7,7 @@ using namespace std;
 
 #include "pagerank.h"
 
-template <typename T>
+template <typename T> 			// Helper function to simplify sorting.
 void sort(vector<T> array){
 	sort((array).begin(), (array).end());
 }
@@ -20,7 +20,7 @@ void Graph::insertEdge(string from, string to){
 
 
 bool Graph::isEdge(string from, string to){
-	string i = *(vertices.find(from));      // Automatically dereference returned iterator
+	string i = *(vertices.find(from));      // Automatically dereference returned iterator from set.find(item);
 	vector<string> j = getAdjacent(i);
 	for(string k : j)
 		if(k == to)
@@ -28,30 +28,11 @@ bool Graph::isEdge(string from, string to){
 	return false;
 }
 
-vector<string> Graph::getAdjacent(string vertex){
+vector<string> Graph::getAdjacent(string vertex){  // Gets vector of adjacent pages from a vertex.
 	return graph[vertex];
 }
 
-
-void Graph::printGraph(){
-	for(string i : vertices){
-		vector<string> j = getAdjacent(i);
-		int n = j.size();
-		if(!j.empty()){
-			cout << i << " ";
-			for(int k = 0; k < n; k++){
-				cout << j[k];
-				if(k+1 < n)
-					cout << " ";
-			}
-		}
-		else
-			cout << i;
-		cout << endl;
-	}
-}
-
-float Graph::getOutDegree(string vertex){
+float Graph::getOutDegree(string vertex){  // Gets the out degree of a vertex using getAdjacent.
 	return getAdjacent(vertex).size();
 }
 
@@ -64,7 +45,7 @@ void Graph::sortVertices(){
 }
 
 
-void Graph::initRankMatrix(){
+void Graph::initRankMatrix(){   // Initializes the rank matrix and fills it with proper values.
 	int n = vertices.size();
 	rankMatrix = new float *[n];
 	for(int i = 0; i < n; i++){
@@ -79,7 +60,7 @@ void Graph::initRankMatrix(){
 	}
 }
 
-void Graph::initPowMatrix(){
+void Graph::initPowMatrix(){   // Initializes the power matrix and fills it with proper values.
 	int n = vertices.size();
 	powMatrix = new float[n];
 	for(int i = 0; i < n; i++)
@@ -91,31 +72,11 @@ void Graph::initMatrices(){
 	initRankMatrix();
 }
 
-
-void Graph::printRankMatrix(){
-	int n = vertices.size();
-	for(int i = 0; i < n; i++){
-		for(int j = 0; j < n; j++)
-			printf("  %.2f", rankMatrix[i][j]);
-		cout << endl;
-	}
-	cout << endl;
-}
-
-void Graph::printPowMatrix(){
-	int n = vertices.size();
-	for(int i = 0; i < n; i++){
-		printf("  %.2f", powMatrix[i]);
-		cout << endl;
-	}
-	cout << endl;
-}
-
 void Graph::powerIterations(int iterations){
 	int n = vertices.size();
 	float * tempMatrix = new float[n];
-	for(int t = 1; t < iterations; t++){
-
+	for(int t = 1; t < iterations; t++){  // Uses a temporary matrix to store and change the values of the
+										  // iterating power matrix.
 		for(int i = 0; i < n; i++)
 			tempMatrix[i] = powMatrix[i];
 
@@ -128,13 +89,16 @@ void Graph::powerIterations(int iterations){
 
 		for(int i = 0; i < n; i++)
 			powMatrix[i] = tempMatrix[i];
+
 	}
 }
 
 void Graph::printPageRank(){
 	int n = vertices.size();
-	for(int i = 0; i < n; i++)
-		cout << sortedVertices[i] << " " << powMatrix[i] << endl;
+	for(int i = 0; i < n; i++){
+		cout << sortedVertices[i];
+		printf(" %.2f\n", powMatrix[i]);
+	}
 }
 
 int main(){
