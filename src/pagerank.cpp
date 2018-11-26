@@ -13,10 +13,10 @@ void sort(vector<T> array){
 }
 
 void Graph::insertEdge(string from, string to){
-	g[from].push_back(to);
+	graph[from].push_back(to);
 	vertices.insert(to);		// Inserting both to and from will assure all vertices are collected without overlap.
 	vertices.insert(from);
-}  //inserts new edge in graph
+}
 
 
 bool Graph::isEdge(string from, string to){
@@ -26,21 +26,22 @@ bool Graph::isEdge(string from, string to){
 		if(k == to)
 			return true;
 	return false;
-}  //returns true if there is an edge between the vertices from and to
+}
 
 vector<string> Graph::getAdjacent(string vertex){
-	return g[vertex];
-}  //return an array of strings representing vertices adjacent to vertex
+	return graph[vertex];
+}
 
 
 void Graph::printGraph(){
 	for(string i : vertices){
 		vector<string> j = getAdjacent(i);
+		int n = j.size();
 		if(!j.empty()){
 			cout << i << " ";
-			for(unsigned int k = 0; k < j.size(); k++){
+			for(int k = 0; k < n; k++){
 				cout << j[k];
-				if(k+1 < j.size())
+				if(k+1 < n)
 					cout << " ";
 			}
 		}
@@ -48,7 +49,7 @@ void Graph::printGraph(){
 			cout << i;
 		cout << endl;
 	}
-} //prints graph in a format sorted by ascending vertex and edge list
+}
 
 float Graph::getOutDegree(string vertex){
 	return getAdjacent(vertex).size();
@@ -62,85 +63,98 @@ void Graph::sortVertices(){
 	sortedVertices = temp;
 }
 
-void Graph::fillRanks(){
-	int n = vertices.size();
-	for(int i = 0; i < n; i++)
-		for(int j = 0; j < n; j++)
-			if(isEdge(sortedVertices[i],sortedVertices[j]))
-				rankMatrix[j][i] = 1/getOutDegree(sortedVertices[i]);
-}
 
-void Graph::initializeMatrix(){
+void Graph::initRankMatrix(){
 	int n = vertices.size();
 	rankMatrix = new float *[n];
 	for(int i = 0; i < n; i++){
 		rankMatrix[i] = new float[n];
 		for(int j = 0; j < n; j++)
-			rankMatrix[i][j] = 0;
+			rankMatrix[i][j] = 0; // Must set values before we can alter them in a different order (j,i) later.
+	}
+	for(int i = 0; i < n; i++){
+		for(int j = 0; j < n; j++)
+			if(isEdge(sortedVertices[i],sortedVertices[j]))
+				rankMatrix[j][i] = 1/getOutDegree(sortedVertices[i]);
 	}
 }
 
-void Graph::printMatrix(){
+void Graph::initPowMatrix(){
+	int n = vertices.size();
+	powMatrix = new float[n];
+	for(int i = 0; i < n; i++)
+		powMatrix[i] = 1 / float(n);
+}
+
+void Graph::initMatrices(){
+	initPowMatrix();
+	initRankMatrix();
+}
+
+
+void Graph::printRankMatrix(){
 	int n = vertices.size();
 	for(int i = 0; i < n; i++){
 		for(int j = 0; j < n; j++)
 			printf("  %.2f", rankMatrix[i][j]);
 		cout << endl;
 	}
+	cout << endl;
 }
 
-void Graph::printSortedVertices(){
-	int c = 0;
-	for(string i : sortedVertices){
-		cout << i << " ";
-		c++;
+void Graph::printPowMatrix(){
+	int n = vertices.size();
+	for(int i = 0; i < n; i++){
+		printf("  %.2f", powMatrix[i]);
+		cout << endl;
+	}
+	cout << endl;
+}
+
+void Graph::powerIterations(int iterations){
+	int n = vertices.size();
+	float * tempMatrix = new float[n];
+	for(int t = 1; t < iterations; t++){
+
+		for(int i = 0; i < n; i++)
+			tempMatrix[i] = powMatrix[i];
+
+		for(int i = 0; i < n; i++){
+			float num = 0;
+			for(int j = 0; j < n; j++)
+				num += rankMatrix[i][j] * powMatrix[j];
+			tempMatrix[i] = num;
+		}
+
+		for(int i = 0; i < n; i++)
+			powMatrix[i] = tempMatrix[i];
 	}
 }
 
+void Graph::printPageRank(){
+	int n = vertices.size();
+	for(int i = 0; i < n; i++)
+		cout << sortedVertices[i] << " " << powMatrix[i] << endl;
+}
+
 int main(){
-    string to, fro;
     Graph * g = new Graph();
+	int lines, iterations;
+	string from, to;
 
-    fro = "google.com";
-    to = "gmail.com";
-    g->insertEdge(fro,to);
+	cin >> lines;
+	cin >> iterations;
 
-    fro = "google.com";
-	to = "maps.com";
-	g->insertEdge(fro,to);
+	for(int i = 0; i < lines; i++){
+		cin >> from;
+		cin >> to;
+		g->insertEdge(from,to);
+	}
 
-	fro = "facebook.com";
-	to = "ufl.edu";
-	g->insertEdge(fro,to);
-
-	fro = "ufl.edu";
-	to = "google.com";
-	g->insertEdge(fro,to);
-
-	fro = "ufl.edu";
-	to = "gmail.com";
-	g->insertEdge(fro,to);
-
-	fro = "maps.com";
-	to = "facebook.com";
-	g->insertEdge(fro,to);
-
-	fro = "gmail.com";
-	to = "maps.com";
-	g->insertEdge(fro,to);
-
-	g->printGraph();
 	g->sortVertices();
-	g->initializeMatrix();
-	g->fillRanks();
-	g->printMatrix();
-
-
-
-//	for(string i : g->getAdjacent(fro))
-//		cout << i << " ";
-//	cout << endl;
-
+	g->initMatrices();
+	g->powerIterations(iterations);
+	g->printPageRank();
 
     return 0;
 }

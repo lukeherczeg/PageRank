@@ -4,22 +4,26 @@
 class Graph
 {
 	private:
-		map <string, vector<string>> g;
+		map <string, vector<string>> graph;
 		set <string> vertices;
 		vector <string> sortedVertices;
 		float ** rankMatrix;
+		float * powMatrix;
 
     public:
-		void insertEdge(string from, string to);  //inserts new edge in graph
-		bool isEdge(string from, string to);  //returns true if there is an edge between the vertices from and to
-		vector<string> getAdjacent(string vertex);  //return an array of integers representing vertices adjacent to vertex
-		void printGraph(); //prints graph in a format sorted by ascending vertex and edge list
+		vector<string> getAdjacent(string vertex);
+		bool isEdge(string from, string to);
 		float getOutDegree(string vertex);
+		void insertEdge(string from, string to);
+		void powerIterations(int iterations);
+		void printGraph();
 		void sortVertices();
-		void printSortedVertices();
-		void initializeMatrix();
-		void fillRanks();
-		void printMatrix();
+		void initRankMatrix();
+		void initPowMatrix();
+		void initMatrices();
+		void printRankMatrix();
+		void printPowMatrix();
+		void printPageRank();
 };
 
 
