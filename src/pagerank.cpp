@@ -78,17 +78,17 @@ void Graph::powerIterations(int iterations){
 	for(int t = 1; t < iterations; t++){  // Uses a temporary matrix to store and change the values of the
 										  // iterating power matrix.
 		for(int i = 0; i < n; i++)
-			tempMatrix[i] = powMatrix[i];
+			tempMatrix[i] = powMatrix[i];  // Copy powMatrix to the tempMatrix
 
 		for(int i = 0; i < n; i++){
 			float num = 0;
 			for(int j = 0; j < n; j++)
-				num += rankMatrix[i][j] * powMatrix[j];
+				num += rankMatrix[i][j] * powMatrix[j];  // Perform multiplication
 			tempMatrix[i] = num;
 		}
 
 		for(int i = 0; i < n; i++)
-			powMatrix[i] = tempMatrix[i];
+			powMatrix[i] = tempMatrix[i];  // Copy tempMatrix back to the powMatrix
 
 	}
 }
@@ -108,17 +108,20 @@ int main(){
 
 	cin >> lines;
 	cin >> iterations;
+	if(iterations >= 1){
+		for(int i = 0; i < lines; i++){
+			cin >> from;
+			cin >> to;
+			g->insertEdge(from,to);
+		}
 
-	for(int i = 0; i < lines; i++){
-		cin >> from;
-		cin >> to;
-		g->insertEdge(from,to);
+		g->sortVertices();
+		g->initMatrices();
+		g->powerIterations(iterations);
+		g->printPageRank();
 	}
-
-	g->sortVertices();
-	g->initMatrices();
-	g->powerIterations(iterations);
-	g->printPageRank();
+	else
+		cout << "\nThe number of iterations must be a positive integer above 0." << endl;
 
     return 0;
 }
